@@ -1,0 +1,2791 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" dir="ltr" class="js" lang="en"><head>
+  <meta charset="UTF-8">
+  <title>Special parameters and shell variables [Bash Hackers Wiki]</title>
+<link type="text/css" rel="stylesheet" href="./bootstrap-night.css">
+<!--[if gte IE 9]><!-->
+</head><body class="default dokuwiki mode_show tpl_bootstrap3 dw-page-on-panel" data-page-id="syntax:shellvars"><!--<![endif]-->
+<style type="text/css">@media screen { body { margin-top: 20px; }  #dw__toc.affix { top: 10px; position: fixed !important; }  #dw__toc .nav .nav .nav { display: none; } }</style>
+    <!--[if lt IE 9]>
+  <![endif]-->
+
+
+  
+
+  <div id="dokuwiki__top" class="dokuwiki container">
+
+    
+
+    <main class="main row" role="main">
+
+      
+      <article id="dokuwiki__content" class="container" itemscope="" itemtype="http://schema.org/Article" itemref="dw__license">
+
+        
+
+
+        <div class="panel panel-default" itemprop="articleBody">
+          <div class="page panel-body">
+
+            <div class="dw-content-page dw-toc-closed"><!-- CONTENT --><div class="dw-content">
+<h1 class="sectionedit1 page-header" id="special_parameters_and_shell_variables">Special parameters and shell variables<a class="anchorjs-link " href="#special_parameters_and_shell_variables" aria-label="Anchor link for: special_parameters_and_shell_variables" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h1>
+<div class="level1">
+
+</div>
+
+<h2 class="sectionedit2 page-header" id="special_parameters">Special Parameters<a class="anchorjs-link " href="#special_parameters" aria-label="Anchor link for: special_parameters" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h2>
+<div class="level2">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<thead>
+	<tr class="row0">
+		<th class="col0">parameter</th><th class="col1">character</th><th class="col2">expansion description</th>
+	</tr>
+	</thead>
+	<tbody><tr class="row1">
+		<td class="col0"><code>*</code></td><td class="col1">asterisk</td><td class="col2">The positional parameters starting from the first. When used inside doublequotes (see <a href="https://wiki.bash-hackers.org/syntax/quoting" class="wikilink1" title="syntax:quoting"> quoting</a>), like <code>"$*"</code>, it expands to all positional parameters <em>as one word</em>, delimited by the first character of the <code>IFS</code> variable (a space in this example): <code>"$1 $2 $3 $4"</code>. <br>
+If <code>IFS</code> is unset, the delimiter used will be always a space, if <code>IFS</code> is NULL, the delimiter will be nothing, which effectively concatenates all the positional parameters without any delimiter. <br>
+When used unquoted, it will just expand to the strings, one by one, not 
+preserving the word boundaries (i.e. word splitting will split the text 
+again, if it contains <code>IFS</code> characters. <br>
+See also the <a href="https://wiki.bash-hackers.org/scripting/posparams" class="wikilink1" title="scripting:posparams"> scripting article about handling positional parameters</a>.</td>
+	</tr>
+	<tr class="row2">
+		<td class="col0"><code>@</code></td><td class="col1">at-sign</td><td class="col2">The positional parameters starting from the first. When used inside doublequotes (see <a href="https://wiki.bash-hackers.org/syntax/quoting" class="wikilink1" title="syntax:quoting"> quoting</a>), like <code>"$@"</code>, it expands all positional parameters <em>as separate words</em>: <code>"$1" "$2" "$3" "$4"</code> <br>
+Without doublequotes, the behaviour is like the one of <code>*</code> without doublequotes. <br>
+See also the <a href="https://wiki.bash-hackers.org/scripting/posparams" class="wikilink1" title="scripting:posparams"> scripting article about handling positional parameters</a>.</td>
+	</tr>
+	<tr class="row3">
+		<td class="col0"><code>#</code></td><td class="col1">hash mark</td><td class="col2">Number of positional parameters (decimal) <br>
+See also the <a href="https://wiki.bash-hackers.org/scripting/posparams" class="wikilink1" title="scripting:posparams"> scripting article about handling positional parameters</a>.</td>
+	</tr>
+	<tr class="row4">
+		<td class="col0"><code>?</code></td><td class="col1">question mark</td><td class="col2">Status of the most recently executed foreground-pipeline (exit/return code)</td>
+	</tr>
+	<tr class="row5">
+		<td class="col0"><code>-</code></td><td class="col1">dash</td><td class="col2">Current option flags set by the shell itself, on invocation, or using the <a href="https://wiki.bash-hackers.org/commands/builtin/set" class="wikilink1" title="commands:builtin:set"> set builtin command</a>. It's just a set of characters, like <code>himB</code> for <code>h</code>, <code>i</code>, <code>m</code> and <code>B</code>.</td>
+	</tr>
+	<tr class="row6">
+		<td class="col0"><code>$</code></td><td class="col1">dollar-sign</td><td class="col2">The process ID (PID) of the shell. In an <a href="https://wiki.bash-hackers.org/syntax/ccmd/grouping_subshell" class="wikilink1" title="syntax:ccmd:grouping_subshell"> explicit subshell</a> it expands to the PID of the current "main shell", not the subshell. This is different from <code>$BASHPID</code>!</td>
+	</tr>
+	<tr class="row7">
+		<td class="col0"><code>!</code></td><td class="col1">exclamation mark</td><td class="col2">The process ID (PID) of the most recently executed background pipeline (like started with <code>command &amp;</code>)</td>
+	</tr>
+	<tr class="row8">
+		<td class="col0"><code>0</code></td><td class="col1">zero</td><td class="col2">The name of the shell or the shell script (filename). Set by the shell itself. <br>
+If Bash is started with a filename to execute (script), it's set to this filename. If started with the <code>-c &lt;CMDLINE&gt;</code> option (commandline given as argument), then <code>$0</code> will be the first argument after the given <code>&lt;CMDLINE&gt;</code>. Otherwise, it is set to the string given on invocation for <code>argv[0]</code>. <br>
+Unlike popular belief, <code>$0</code> is <em>not a positional parameter</em>.</td>
+	</tr>
+	<tr class="row9">
+		<td class="col0"><code>_</code></td><td class="col1">underscore</td><td class="col2">A
+ kind of catch-all parameter. Directly after shell invocation, it's set 
+to the filename used to invoke Bash, or the absolute or relative path to
+ the script, just like <code>$0</code> would show it. Subsequently, 
+expands to the last argument to the previous command. Placed into the 
+environment when executing commands, and set to the full pathname of 
+these commands. When checking mail, this parameter holds the name of the
+ mail file currently being checked.</td>
+	</tr>
+</tbody></table></div>
+
+</div>
+
+<h2 class="sectionedit4 page-header" id="shell_variables">Shell Variables<a class="anchorjs-link " href="#shell_variables" aria-label="Anchor link for: shell_variables" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h2>
+<div class="level2">
+
+</div>
+
+<h3 class="sectionedit5" id="bash">BASH<a class="anchorjs-link " href="#bash" aria-label="Anchor link for: bash" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>BASH</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Expands to the full file name used to invoke the current instance of Bash.
+</p>
+
+</div>
+
+<h3 class="sectionedit7" id="bashopts">BASHOPTS<a class="anchorjs-link " href="#bashopts" aria-label="Anchor link for: bashopts" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>BASHOPTS</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">4.1-alpha   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">yes  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+A colon-separated list of enabled shell options.
+</p>
+
+<p>
+Each word in the list is a valid argument for the <code>-s</code> option to the
+<a href="https://wiki.bash-hackers.org/commands/builtin/shopt" class="wikilink1" title="commands:builtin:shopt">shopt builtin command</a>. The options appearing
+in <code>BASHOPTS</code> are those reported as on by <code>shopt</code>. If this variable is
+in the environment when Bash starts up, each shell option in the list will
+be enabled before reading any startup files.
+</p>
+
+<p>
+Example content:
+</p><pre class="code">cmdhist:expand_aliases:extquote:force_fignore:hostcomplete:interactive_comments:progcomp:promptvars:sourcepath</pre>
+
+<p></p>
+
+<p>
+This variable is read-only.
+</p>
+
+</div>
+
+<h3 class="sectionedit9" id="bashpid">BASHPID<a class="anchorjs-link " href="#bashpid" aria-label="Anchor link for: bashpid" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>BASHPID</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">4.0-alpha   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer variable   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">yes  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Always expands to the process ID of the current Bash process. This
+differs from the special parameter <code>$</code> under certain circumstances,
+such as subshells that do not require Bash to be re-initialized.
+</p>
+
+</div>
+
+<h3 class="sectionedit11" id="bash_aliases">BASH_ALIASES<a class="anchorjs-link " href="#bash_aliases" aria-label="Anchor link for: bash_aliases" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>BASH_ALIASES</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">associative array   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+An associative array variable whose members correspond to the
+internal list of aliases as maintained by the alias builtin.
+Elements added to this array appear in the alias list; unsetting
+array elements cause aliases to be removed from the alias list.
+</p>
+
+<p>
+The associative key is the name of the alias as used with the
+<a href="https://wiki.bash-hackers.org/commands/builtin/alias" class="wikilink2" title="commands:builtin:alias" rel="nofollow"> alias builtin command</a>.
+</p>
+
+</div>
+
+<h3 class="sectionedit13" id="bash_argc">BASH_ARGC<a class="anchorjs-link " href="#bash_argc" aria-label="Anchor link for: bash_argc" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>BASH_ARGC</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">3.0   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer indexed array   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">only in extended debugging mode  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+An array variable whose values are the number of parameters in
+each frame of the current Bash execution call stack.
+</p>
+
+<p>
+The number of parameters to the current subroutine (shell function or
+script executed with <a href="https://wiki.bash-hackers.org/commands/builtin/source" class="wikilink2" title="commands:builtin:source" rel="nofollow">''.'' or ''source'' builtin command</a>)
+is at the top of the stack.
+When a subroutine is executed, the number of parameters passed is pushed onto <code>BASH_ARGC</code>.
+</p>
+
+</div>
+
+<h3 class="sectionedit15" id="bash_argv">BASH_ARGV<a class="anchorjs-link " href="#bash_argv" aria-label="Anchor link for: bash_argv" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>BASH_ARGV</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">3.0   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer indexed array  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">only in extended debugging mode  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+An array variable containing all of the parameters in the current Bash
+execution call stack.
+</p>
+
+<p>
+The final parameter of the last subroutine call is at
+the top of the stack; the first parameter of the initial call is at the
+bottom. When a subroutine is executed, the parameters supplied are pushed onto
+<code>BASH_ARGV</code>.
+</p>
+
+</div>
+
+<h3 class="sectionedit17" id="bash_argv0">BASH_ARGV0<a class="anchorjs-link " href="#bash_argv0" aria-label="Anchor link for: bash_argv0" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>BASH_ARGV0</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">5.0-alpha   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">string  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">same as <code>$0</code>  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Expands to the name of the shell or shell script - as the special parameter <code>$0</code> does. Assignments to <code>BASH_ARGV0</code> causes the value to be assigned to <code>$0</code>.
+</p>
+
+<p>
+If this parameter is unset, it loses its special properties, even if subsequently reset.
+</p>
+
+</div>
+
+<h3 class="sectionedit19" id="bash_cmds">BASH_CMDS<a class="anchorjs-link " href="#bash_cmds" aria-label="Anchor link for: bash_cmds" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>BASH_CMDS</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">associative array   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+An associative array variable whose members correspond to the
+internal hash table of commands as maintained by the <a href="https://wiki.bash-hackers.org/commands/builtin/hash" class="wikilink2" title="commands:builtin:hash" rel="nofollow">hash builtin command</a>.
+Elements added to this array appear in the hash table;
+unsetting array elements cause commands to be removed from the hash table.
+</p>
+
+<p>
+The associative key is the name of the command as used with the<a href="https://wiki.bash-hackers.org/commands/builtin/hash" class="wikilink2" title="commands:builtin:hash" rel="nofollow">hash builtin command</a>.
+</p>
+
+</div>
+
+<h3 class="sectionedit21" id="bash_command">BASH_COMMAND<a class="anchorjs-link " href="#bash_command" aria-label="Anchor link for: bash_command" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>BASH_COMMAND</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">3.0   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The command currently being executed or about to be executed, unless the shell
+is executing a command as the result of a trap, in which case it is the command
+executing at the time of the trap.
+</p>
+
+</div>
+
+<h3 class="sectionedit23" id="bash_compat">BASH_COMPAT<a class="anchorjs-link " href="#bash_compat" aria-label="Anchor link for: bash_compat" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>BASH_COMPAT</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">4.3-alpha  </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The value is used to set the shell's compatibility level. The value may be a decimal number (e.g., <code>4.2</code>) or an integer (e.g., <code>42</code>) corresponding to the desired compatibility level. If <code>BASH_COMPAT</code> is unset or set to the empty string, the compatibility level is set to the default for the current version. If  <code>BASH_COMPAT</code>
+ is set to a value that is not one of the valid compatibility levels, 
+the shell prints an error message and sets the compatibility level to 
+the default for the current version. The valid compatibility levels 
+correspond to the compatibility options accepted by the shopt builtin. 
+The current version is also a valid value.
+</p>
+
+</div>
+
+<h3 class="sectionedit25" id="bash_execution_string">BASH_EXECUTION_STRING<a class="anchorjs-link " href="#bash_execution_string" aria-label="Anchor link for: bash_execution_string" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>BASH_EXECUTION_STRING</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">3.0   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The command argument to the <code>-c</code> invocation option.
+</p>
+
+</div>
+
+<h3 class="sectionedit27" id="bash_lineno">BASH_LINENO<a class="anchorjs-link " href="#bash_lineno" aria-label="Anchor link for: bash_lineno" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>BASH_LINENO</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">3.0   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer indexed array   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+An array variable whose members are the line numbers in source files
+corresponding to each member of <code>FUNCNAME</code>.
+</p>
+
+<p>
+<code>${BASH_LINENO[$i]}</code> is the line number in the source file where
+<code>${FUNCNAME[$ifP]}</code> was called. The corresponding source file name
+is <code>${BASH_SOURCE[$i]}</code>. Use <code>LINENO</code> to obtain the current line number.
+</p>
+
+</div>
+
+<h3 class="sectionedit29" id="bash_rematch">BASH_REMATCH<a class="anchorjs-link " href="#bash_rematch" aria-label="Anchor link for: bash_rematch" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>BASH_REMATCH</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">3.0   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer indexed array   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">yes  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+An array variable whose members are assigned by the <code>=~</code> binary operator to
+the <code>[[</code> conditional command.
+</p>
+
+<p>
+The element with index 0 is the portion of the string matching the entire regular expression. The element
+with index <code>n</code> is the portion of the string matching the nth parenthesized
+subexpression.
+</p>
+
+</div>
+
+<h3 class="sectionedit31" id="bash_source">BASH_SOURCE<a class="anchorjs-link " href="#bash_source" aria-label="Anchor link for: bash_source" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>BASH_SOURCE</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">3.0   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer indexed array   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+An array variable whose members are the source filenames corresponding to the
+elements in the <code>FUNCNAME</code> array variable.
+</p>
+
+</div>
+
+<h3 class="sectionedit33" id="bash_subshell">BASH_SUBSHELL<a class="anchorjs-link " href="#bash_subshell" aria-label="Anchor link for: bash_subshell" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>BASH_SUBSHELL</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">3.0   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Incremented by one each time a subshell or subshell environment is spawned.
+The initial value is 0.
+</p>
+
+</div>
+
+<h3 class="sectionedit35" id="bash_versinfo">BASH_VERSINFO<a class="anchorjs-link " href="#bash_versinfo" aria-label="Anchor link for: bash_versinfo" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>BASH_VERSINFO</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">2.0   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer indexed array   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">yes  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+A readonly array variable whose members hold version information for this
+instance of Bash. The values assigned to the array members are as follows:
+</p>
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<td class="col0 leftalign">BASH_VERSINFO[0]  </td><td class="col1 leftalign">The major version number (the release)  </td>
+	</tr>
+	<tr class="row1">
+		<td class="col0 leftalign">BASH_VERSINFO[1]  </td><td class="col1 leftalign">The minor version number (the version)  </td>
+	</tr>
+	<tr class="row2">
+		<td class="col0 leftalign">BASH_VERSINFO[2]  </td><td class="col1 leftalign">The patch level                         </td>
+	</tr>
+	<tr class="row3">
+		<td class="col0 leftalign">BASH_VERSINFO[3]  </td><td class="col1 leftalign">The build version                       </td>
+	</tr>
+	<tr class="row4">
+		<td class="col0 leftalign">BASH_VERSINFO[4]  </td><td class="col1 leftalign">The release status (e.g., beta1)        </td>
+	</tr>
+	<tr class="row5">
+		<td class="col0 leftalign">BASH_VERSINFO[5]  </td><td class="col1 leftalign">The value of <code>MACHTYPE</code>               </td>
+	</tr>
+</tbody></table></div>
+
+</div>
+
+<h3 class="sectionedit38" id="bash_version">BASH_VERSION<a class="anchorjs-link " href="#bash_version" aria-label="Anchor link for: bash_version" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>BASH_VERSION</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Expands to a string describing the version of this instance of Bash.
+</p>
+
+<p>
+Since Bash 2.0 it includes the shell's "release status" (alpha[N], beta[N], release).
+</p>
+
+</div>
+
+<h3 class="sectionedit40" id="child_max">CHILD_MAX<a class="anchorjs-link " href="#child_max" aria-label="Anchor link for: child_max" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>CHILD_MAX</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">4.3-alpha   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Set the number of exited child status values for the shell to remember. 
+Bash will not allow this value to be decreased below a POSIX-mandated 
+minimum, and there is a maximum value (currently 8192) that this may not
+ exceed. The minimum value is system-dependent.
+</p>
+
+</div>
+
+<h3 class="sectionedit42" id="comp_cword">COMP_CWORD<a class="anchorjs-link " href="#comp_cword" aria-label="Anchor link for: comp_cword" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>COMP_CWORD</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">only for programmable completion facilities  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+An index into <code>COMP_WORDS</code> of the word containing the current cursor position.
+</p>
+
+</div>
+
+<h3 class="sectionedit44" id="comp_key">COMP_KEY<a class="anchorjs-link " href="#comp_key" aria-label="Anchor link for: comp_key" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>COMP_KEY</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">only for programmable completion facilities  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The key (or final key of a key sequence) used to invoke the current completion
+function.
+</p>
+
+</div>
+
+<h3 class="sectionedit46" id="comp_line">COMP_LINE<a class="anchorjs-link " href="#comp_line" aria-label="Anchor link for: comp_line" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>COMP_LINE</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">only for programmable completion facilities  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The current command line.
+</p>
+
+</div>
+
+<h3 class="sectionedit48" id="comp_point">COMP_POINT<a class="anchorjs-link " href="#comp_point" aria-label="Anchor link for: comp_point" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>COMP_POINT</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">only for programmable completion facilities  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The index of the current cursor position relative to the beginning
+of the current command. If the current cursor position is
+at the end of the current command, the value of this variable is
+equal to <code>${#COMP_LINE}</code>.
+</p>
+
+</div>
+
+<h3 class="sectionedit50" id="comp_type">COMP_TYPE<a class="anchorjs-link " href="#comp_type" aria-label="Anchor link for: comp_type" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>COMP_TYPET</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">only for programmable completion facilities  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Set to an integer value corresponding to the type of completion
+attempted that caused a completion function to be called:
+</p>
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<td class="col0 leftalign"><code>TAB</code>  </td><td class="col1 leftalign">normal completion                                  </td>
+	</tr>
+	<tr class="row1">
+		<td class="col0 leftalign"><code>?</code>    </td><td class="col1 leftalign">listing completions after successive tabs          </td>
+	</tr>
+	<tr class="row2">
+		<td class="col0 leftalign"><code>!</code>    </td><td class="col1 leftalign">listing alternatives on partial word completion    </td>
+	</tr>
+	<tr class="row3">
+		<td class="col0 leftalign"><code>@</code>    </td><td class="col1 leftalign">to list completions if the word is not unmodified  </td>
+	</tr>
+	<tr class="row4">
+		<td class="col0 leftalign"><code>%</code>    </td><td class="col1 leftalign">for menu completion                                </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+</p>
+
+</div>
+
+<h3 class="sectionedit53" id="comp_wordbreaks">COMP_WORDBREAKS<a class="anchorjs-link " href="#comp_wordbreaks" aria-label="Anchor link for: comp_wordbreaks" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>COMP_WORDBREAKS</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Reports the set of characters that the readline library treats as word
+separators when performing word completion.
+</p>
+
+<p>
+If this parameter is unset, it loses its special properties, even if it is subsequently reset.
+</p>
+
+</div>
+
+<h3 class="sectionedit55" id="comp_words">COMP_WORDS<a class="anchorjs-link " href="#comp_words" aria-label="Anchor link for: comp_words" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>COMP_WORDS</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer indexed array   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">only for programmable completion facilities  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+An array variable consisting of the individual words in the current command
+line. The line is split into words as readline would split it, using
+<code>COMP_WORDBREAKS</code> as described above.
+</p>
+
+</div>
+
+<h3 class="sectionedit57" id="coproc">COPROC<a class="anchorjs-link " href="#coproc" aria-label="Anchor link for: coproc" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>COPROC</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer indexed array   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+An array variable created to hold the file descriptors for output from and
+input to an unnamed coprocess.
+</p>
+
+</div>
+
+<h3 class="sectionedit59" id="dirstack">DIRSTACK<a class="anchorjs-link " href="#dirstack" aria-label="Anchor link for: dirstack" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>DIRSTACK</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer indexed array   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+An array variable containing the current contents of the directory stack.
+</p>
+
+<p>
+Directories appear in the stack in the order they are displayed by the dirs
+builtin. Assigning to members of this array variable may be used to modify
+directories already in the stack, but the pushd and popd builtins must
+be used to add and remove directories.
+</p>
+
+<p>
+Assignment to this variable will not change the current directory.
+</p>
+
+<p>
+If this parameter is unset, it loses its special properties, even if it is subsequently reset.
+</p>
+
+</div>
+
+<h3 class="sectionedit61" id="epochrealtime">EPOCHREALTIME<a class="anchorjs-link " href="#epochrealtime" aria-label="Anchor link for: epochrealtime" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>EPOCHREALTIME</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">5.0-alpha   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer variable   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Expands to the number of seconds since Unix expoch as a floating point value with micro-second granularity.
+</p>
+
+<p>
+Assignments to this parameter are ignored. If this parameter is unset, 
+it loses its special properties, even if it is subsequently reset.
+</p>
+
+</div>
+
+<h3 class="sectionedit63" id="epochseconds">EPOCHSECONDS<a class="anchorjs-link " href="#epochseconds" aria-label="Anchor link for: epochseconds" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>EPOCHSECONDS</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">5.0-alpha   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer variable   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Expands to the number of seconds since Unix expoch.
+</p>
+
+<p>
+Assignments to this parameter are ignored. If this parameter is unset, 
+it loses its special properties, even if it is subsequently reset.
+</p>
+
+</div>
+
+<h3 class="sectionedit65" id="euid">EUID<a class="anchorjs-link " href="#euid" aria-label="Anchor link for: euid" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>EUID</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">yes  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Expands to the effective user ID of the current user, initialized at shell startup.
+</p>
+
+<p>
+</p>
+
+</div>
+
+<h3 class="sectionedit67" id="funcname">FUNCNAME<a class="anchorjs-link " href="#funcname" aria-label="Anchor link for: funcname" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>FUNCNAME</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">2.04   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer indexed array   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">only inside shell functions  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+An array variable containing the names of all shell functions currently in the
+execution call stack.
+</p>
+
+<p>
+The element with index 0 is the name of any currently-executing shell function.
+The bottom-most element (the one with the highest index) is "main".
+</p>
+
+<p>
+This variable can be used with <code>BASH_LINENO</code> and <code>BASH_SOURCE</code>:
+Each element of <code>FUNCNAME</code> has corresponding elements in <code>BASH_LINENO</code> and
+<code>BASH_SOURCE</code> to describe the call stack. For instance, <code>${FUNCNAME[$i]}</code>
+was called from the file <code>${BASH_SOURCE[$i+1]}</code> at line number
+<code>${BASH_LINENO[$i]}</code>. The <a href="https://wiki.bash-hackers.org/commands/builtin/caller" class="wikilink1" title="commands:builtin:caller">caller builtin command</a>
+displays the current call stack using this information.
+</p>
+
+<p>
+This variable exists only when a shell function is executing.
+</p>
+
+<p>
+Assignments to this parameter have no effect and return an error status.
+</p>
+
+<p>
+If this parameter is unset, it loses its special properties, even if it is subsequently reset.
+</p>
+
+</div>
+
+<h3 class="sectionedit69" id="groups">GROUPS<a class="anchorjs-link " href="#groups" aria-label="Anchor link for: groups" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>GROUPS</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">2.01   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer indexed array   </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+An array variable containing the list of groups of which the current user
+is a member.
+</p>
+
+<p>
+Assignments to this parameter have no effect and return an error status.
+</p>
+
+<p>
+If this parameter is unset, it loses its special properties, even if it is subsequently reset.
+</p>
+
+</div>
+
+<h3 class="sectionedit71" id="histcmd">HISTCMD<a class="anchorjs-link " href="#histcmd" aria-label="Anchor link for: histcmd" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>HISTCMD</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">1.14.0   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Expands to the history number (index in the history list) of the current command.
+</p>
+
+<p>
+If this parameter is unset, it loses its special properties, even if it is subsequently reset.
+</p>
+
+</div>
+
+<h3 class="sectionedit73" id="hostname">HOSTNAME<a class="anchorjs-link " href="#hostname" aria-label="Anchor link for: hostname" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>HOSTNAME</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Automatically set to the name of the current host.
+</p>
+
+</div>
+
+<h3 class="sectionedit75" id="hosttype">HOSTTYPE<a class="anchorjs-link " href="#hosttype" aria-label="Anchor link for: hosttype" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>HOSTTYPE</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">system-dependent  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Automatically set to a string that uniquely describes the type of machine on
+which Bash is executing.
+</p>
+
+<p>
+Example content:
+</p><pre class="code">x86_64</pre>
+
+<p></p>
+
+</div>
+
+<h3 class="sectionedit77" id="lineno">LINENO<a class="anchorjs-link " href="#lineno" aria-label="Anchor link for: lineno" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>LINENO</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Each time this parameter is referenced, the shell substitutes a decimal number
+representing the current sequential line number (starting with 1) within a
+script or function.
+</p>
+
+<p>
+When not in a script or function, the value substituted is not guaranteed
+to be meaningful.
+</p>
+
+<p>
+If this parameter is unset, it loses its special properties, even if it is subsequently reset.
+</p>
+
+</div>
+
+<h3 class="sectionedit79" id="machtype">MACHTYPE<a class="anchorjs-link " href="#machtype" aria-label="Anchor link for: machtype" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>MACHTYPE</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">system-dependent  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Automatically set to a string that fully describes the system type on which
+Bash is executing, in the standard GNU "cpu-company-system" format.
+</p>
+
+<p>
+Example content:
+</p><pre class="code">x86_64-unknown-linux-gnu</pre>
+
+<p></p>
+
+</div>
+
+<h3 class="sectionedit81" id="mapfile">MAPFILE<a class="anchorjs-link " href="#mapfile" aria-label="Anchor link for: mapfile" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>MAPFILE</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer indexed array  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+An array variable created to hold the text read by the
+<a href="https://wiki.bash-hackers.org/commands/builtin/mapfile" class="wikilink1" title="commands:builtin:mapfile">mapfile builtin command</a> when no variable name
+is supplied.
+</p>
+
+</div>
+
+<h3 class="sectionedit83" id="oldpwd">OLDPWD<a class="anchorjs-link " href="#oldpwd" aria-label="Anchor link for: oldpwd" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>OLDPWD</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The previous working directory as set by the cd command.
+</p>
+
+</div>
+
+<h3 class="sectionedit85" id="optarg">OPTARG<a class="anchorjs-link " href="#optarg" aria-label="Anchor link for: optarg" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>OPTARG</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The value of the last option argument processed by the
+<a href="https://wiki.bash-hackers.org/commands/builtin/getopts" class="wikilink2" title="commands:builtin:getopts" rel="nofollow">getopts builtin command</a>.
+</p>
+
+</div>
+
+<h3 class="sectionedit87" id="optind">OPTIND<a class="anchorjs-link " href="#optind" aria-label="Anchor link for: optind" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>OPTIND</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The index of the next argument to be processed by the
+<a href="https://wiki.bash-hackers.org/commands/builtin/getopts" class="wikilink2" title="commands:builtin:getopts" rel="nofollow">getopts builtin command</a>.
+</p>
+
+</div>
+
+<h3 class="sectionedit89" id="ostype">OSTYPE<a class="anchorjs-link " href="#ostype" aria-label="Anchor link for: ostype" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>OSTYPE</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">system-dependent  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Automatically set to a string that describes the operating system on which
+Bash is executing.
+</p>
+
+<p>
+Example content:
+</p><pre class="code">linux-gnu</pre>
+
+<p></p>
+
+</div>
+
+<h3 class="sectionedit91" id="pipestatus">PIPESTATUS<a class="anchorjs-link " href="#pipestatus" aria-label="Anchor link for: pipestatus" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>PIPESTATUS</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">2.0   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer indexed array  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+An array variable containing a list of exit status values from the processes
+in the most-recently-executed foreground pipeline (which may contain only a
+single command).
+</p>
+
+</div>
+
+<h3 class="sectionedit93" id="ppid">PPID<a class="anchorjs-link " href="#ppid" aria-label="Anchor link for: ppid" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>PPID</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">yes  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The process ID of the shell's parent process.
+</p>
+
+</div>
+
+<h3 class="sectionedit95" id="pwd">PWD<a class="anchorjs-link " href="#pwd" aria-label="Anchor link for: pwd" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>PWD</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The current working directory as set by the
+<a href="https://wiki.bash-hackers.org/commands/builtin/cd" class="wikilink1" title="commands:builtin:cd">cd builtin command</a>.
+</p>
+
+</div>
+
+<h3 class="sectionedit97" id="random">RANDOM<a class="anchorjs-link " href="#random" aria-label="Anchor link for: random" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>RANDOM</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Each time this parameter is referenced, a random integer between 0 and 32767
+is generated. The sequence of random numbers may be initialized by assigning
+a value to <code>RANDOM</code>.
+</p>
+
+<p>
+If this parameter is unset, it loses its special properties, even if it is subsequently reset.
+</p>
+
+</div>
+
+<h3 class="sectionedit99" id="readline_line">READLINE_LINE<a class="anchorjs-link " href="#readline_line" aria-label="Anchor link for: readline_line" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>READLINE_LINE</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The contents of the readline line buffer, for use with <code>bind -x</code>.
+</p>
+
+</div>
+
+<h3 class="sectionedit101" id="readline_point">READLINE_POINT<a class="anchorjs-link " href="#readline_point" aria-label="Anchor link for: readline_point" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>READLINE_POINT</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The position of the insertion point in the readline line buffer,
+for use with <code>bind -x</code>.
+</p>
+
+</div>
+
+<h3 class="sectionedit103" id="reply">REPLY<a class="anchorjs-link " href="#reply" aria-label="Anchor link for: reply" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>REPLY</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">only by the <a href="https://wiki.bash-hackers.org/commands/builtin/read" class="wikilink1" title="commands:builtin:read">read builtin command</a>  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Set to the line of input read by the
+<a href="https://wiki.bash-hackers.org/commands/builtin/read" class="wikilink1" title="commands:builtin:read">read builtin command</a> when no arguments are supplied that name target variables.
+</p>
+
+</div>
+
+<h3 class="sectionedit105" id="seconds">SECONDS<a class="anchorjs-link " href="#seconds" aria-label="Anchor link for: seconds" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>SECONDS</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Each time this parameter is referenced, the number of seconds since shell
+invocation is returned. If a value is assigned to SECONDS, the value
+returned upon subsequent references is the number of seconds since the
+assignment plus the value assigned.
+</p>
+
+<p>
+If this parameter is unset, it loses its special properties, even if it is subsequently reset.
+</p>
+
+</div>
+
+<h3 class="sectionedit107" id="shellopts">SHELLOPTS<a class="anchorjs-link " href="#shellopts" aria-label="Anchor link for: shellopts" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>SHELLOPTS</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">yes  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+A colon-separated list of enabled shell options. Each word in the list is a
+valid argument for the <code>-o</code> option to the <a href="https://wiki.bash-hackers.org/commands/builtin/set" class="wikilink1" title="commands:builtin:set">set builtin command</a>.
+The options appearing in <code>SHELLOPTS</code> are those reported as on by <code>set -o</code>.
+</p>
+
+<p>
+If this variable is in the environment when Bash starts up, each shell option in
+the list will be enabled before reading any startup files.
+</p>
+
+</div>
+
+<h3 class="sectionedit109" id="shlvl">SHLVL<a class="anchorjs-link " href="#shlvl" aria-label="Anchor link for: shlvl" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>SHLVL</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Incremented by one each time an instance of Bash is started.
+</p>
+
+</div>
+
+<h3 class="sectionedit111" id="uid">UID<a class="anchorjs-link " href="#uid" aria-label="Anchor link for: uid" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>UID</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">yes  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Expands to the user ID of the current user, initialized at shell startup.
+</p>
+
+<p>
+</p>
+
+</div>
+
+<h3 class="sectionedit113" id="bash_env">BASH_ENV<a class="anchorjs-link " href="#bash_env" aria-label="Anchor link for: bash_env" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>BASH_ENV</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+If this parameter is set when Bash is executing a shell script, its value is
+interpreted as a filename containing commands to initialize the shell, as in
+<code>~/.bashrc</code>. The value of <code>BASH_ENV</code> is subjected to
+</p>
+<ul class=" fix-media-list-overlap">
+<li class="level1"><div class="li"> <a href="https://wiki.bash-hackers.org/syntax/pe" class="wikilink1" title="syntax:pe">parameter expansion</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="https://wiki.bash-hackers.org/syntax/expansion/cmdsubst" class="wikilink1" title="syntax:expansion:cmdsubst">command substitution</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="https://wiki.bash-hackers.org/syntax/expansion/arith" class="wikilink1" title="syntax:expansion:arith">arithmetic expansion</a></div>
+</li>
+</ul>
+
+<p>
+before being interpreted as a file name.
+</p>
+
+<p>
+<code>PATH</code> is not used to search for the resultant file name.
+</p>
+
+</div>
+
+<h3 class="sectionedit115" id="bash_xtracefd">BASH_XTRACEFD<a class="anchorjs-link " href="#bash_xtracefd" aria-label="Anchor link for: bash_xtracefd" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>BASH_XTRACEFD</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">4.1-alpha   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+If set to an integer corresponding to a valid file descriptor, Bash will write
+the trace output generated when <code>set -x</code> is enabled to that file descriptor.
+</p>
+
+<p>
+The file descriptor is closed when <code>BASH_XTRACEFD</code> is unset or assigned
+a new value.
+</p>
+
+<p>
+Unsetting <code>BASH_XTRACEFD</code> or assigning it the empty string causes the trace
+output to be sent to the standard error. Note that setting <code>BASH_XTRACEFD</code>
+to 2 (the standard error file descriptor) and then unsetting it will result in
+the standard error being closed.
+</p>
+
+</div>
+
+<h3 class="sectionedit117" id="cdpath">CDPATH<a class="anchorjs-link " href="#cdpath" aria-label="Anchor link for: cdpath" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>CDPATH</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The search path for the <a href="https://wiki.bash-hackers.org/commands/builtin/cd" class="wikilink1" title="commands:builtin:cd">cd builtin command</a>.
+</p>
+
+<p>
+This is a colon-separated list of directories in which the shell looks for
+destination directories specified by the <code>cd</code> command.
+</p>
+
+<p>
+Example content:
+</p><pre class="code">.:~:/usr</pre>
+
+<p></p>
+
+</div>
+
+<h3 class="sectionedit119" id="columns">COLUMNS<a class="anchorjs-link " href="#columns" aria-label="Anchor link for: columns" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>COLUMNS</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">on <code>SIGWINCH</code>  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Used by the select compound command to determine the terminal width when
+printing selection lists. Automatically set upon receipt of a
+<code>SIGWINCH</code>.
+</p>
+
+</div>
+
+<h3 class="sectionedit121" id="compreply">COMPREPLY<a class="anchorjs-link " href="#compreply" aria-label="Anchor link for: compreply" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>COMPREPLY</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">integer indexed array  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+An array variable from which Bash reads the possible completions generated by
+a shell function invoked by the programmable completion facility.
+</p>
+
+</div>
+
+<h3 class="sectionedit123" id="emacs">EMACS<a class="anchorjs-link " href="#emacs" aria-label="Anchor link for: emacs" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>EMACS</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+If Bash finds this variable in the environment when the shell starts with
+value "t", it assumes that the shell is running in an Emacs shell buffer
+and disables line editing.
+</p>
+
+</div>
+
+<h3 class="sectionedit125" id="env">ENV<a class="anchorjs-link " href="#env" aria-label="Anchor link for: env" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>ENV</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Similar to <code>BASH_ENV</code>: Used when the shell is invoked in POSIX® mode.
+</p>
+
+</div>
+
+<h3 class="sectionedit127" id="fcedit">FCEDIT<a class="anchorjs-link " href="#fcedit" aria-label="Anchor link for: fcedit" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>FCEDIT</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The default editor for the <a href="https://wiki.bash-hackers.org/commands/builtin/fc" class="wikilink2" title="commands:builtin:fc" rel="nofollow">fc builtin command</a>.
+</p>
+
+</div>
+
+<h3 class="sectionedit129" id="fignore">FIGNORE<a class="anchorjs-link " href="#fignore" aria-label="Anchor link for: fignore" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>FIGNORE</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+A colon-separated list of suffixes to ignore when performing filename
+completion. A filename whose suffix matches one of the entries in <code>FIGNORE</code>
+is excluded from the list of matched filenames.
+</p>
+
+<p>
+Example content:
+</p><pre class="code">.o:~</pre>
+
+<p></p>
+
+</div>
+
+<h3 class="sectionedit131" id="funcnest">FUNCNEST<a class="anchorjs-link " href="#funcnest" aria-label="Anchor link for: funcnest" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>FUNCNEST</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">4.2-alpha   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+If set to a numeric value greater than 0, defines a maximum function nesting
+level. Function invocations that exceed this nesting level will cause the
+current command to abort.
+</p>
+
+<p>
+Negative values, 0 or non-numeric assignments have the effect as if
+<code>FUNCNEST</code> was unset or empty: No nest control
+</p>
+
+</div>
+
+<h3 class="sectionedit133" id="globignore">GLOBIGNORE<a class="anchorjs-link " href="#globignore" aria-label="Anchor link for: globignore" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>GLOBIGNORE</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">2.0   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+A colon-separated list of patterns defining the set of filenames to be ignored
+by pathname expansion. If a filename matched by a pathname expansion pattern
+also matches one of the patterns in <code>GLOBIGNORE</code>, it is removed from the list of
+matches.
+</p>
+
+</div>
+
+<h3 class="sectionedit135" id="histcontrol">HISTCONTROL<a class="anchorjs-link " href="#histcontrol" aria-label="Anchor link for: histcontrol" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>HISTCONTROL</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+A colon-separated list of values controlling how commands are saved on the
+history list:
+</p>
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<td class="col0 leftalign"><code>ignorespace</code>    </td><td class="col1 leftalign">lines which begin with a space character are not saved in the history list                                  </td>
+	</tr>
+	<tr class="row1">
+		<td class="col0 leftalign"><code>ignoredups</code>     </td><td class="col1 leftalign">don't save lines matching the previous history entry                                                        </td>
+	</tr>
+	<tr class="row2">
+		<td class="col0 leftalign"><code>ignoreboth</code>     </td><td class="col1 leftalign">short for <code>ignorespace:ignoredups</code>                                                                        </td>
+	</tr>
+	<tr class="row3">
+		<td class="col0 leftalign"><code>erasedups</code>      </td><td class="col1 leftalign">remove all previous lines matching the current line from the history list before the current line is saved  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Any value not in the above list is ignored.
+</p>
+
+<p>
+If <code>HISTCONTROL</code> is unset, or does not include a valid value, all lines read
+by the shell parser are saved on the history list, subject to the value
+of <code>HISTIGNORE</code>. The second and subsequent lines of a multi-line compound
+command are not tested, and are added to the history regardless of the value
+of <code>HISTCONTROL</code>.
+</p>
+
+</div>
+
+<h3 class="sectionedit138" id="histfile">HISTFILE<a class="anchorjs-link " href="#histfile" aria-label="Anchor link for: histfile" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>HISTFILE</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">if unset  </td><th class="col2">Default: </th><td class="col3 leftalign"><code> ~/.bash_history</code>  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The name of the file in which command history is saved.
+</p>
+
+<p>
+If unset, the command history is not saved when an interactive shell
+exits.
+</p>
+
+</div>
+
+<h3 class="sectionedit140" id="histfilesize">HISTFILESIZE<a class="anchorjs-link " href="#histfilesize" aria-label="Anchor link for: histfilesize" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>HISTFILESIZE</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">if unset  </td><th class="col2">Default: </th><td class="col3 leftalign"><code>HISTSIZE</code>  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The maximum number of lines contained in the history file.
+</p>
+
+<p>
+When this variable is assigned a value, the history file is truncated,
+if necessary, by removing the oldest entries, to contain no more than the
+given number of lines. If the given number of lines is 0 (zero), the file is truncated to zero size.
+Non-numeric values and numeric values less than zero inhibit truncation.
+</p>
+
+<p>
+The history file is also truncated to this size after writing it
+when an interactive shell exits.
+</p>
+
+</div>
+
+<h3 class="sectionedit142" id="histignore">HISTIGNORE<a class="anchorjs-link " href="#histignore" aria-label="Anchor link for: histignore" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>HISTIGNORE</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">2.0   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+A colon-separated list of patterns used to decide which command lines should be
+saved on the history list. Each pattern is anchored at the beginning of the
+line and must match the complete line (no implicit '*' is appended).
+</p>
+
+<p>
+Each pattern is tested against the line after the checks specified by
+<code>HISTCONTROL</code> are applied.
+</p>
+
+<p>
+In addition to the normal shell pattern matching characters, "&amp;" matches the
+previous history line. "&amp;" may be escaped using a backslash; the backslash is
+removed before attempting a match.
+</p>
+
+<p>
+The second and subsequent lines of a multi-line compound command are not tested,
+and are added to the history regardless of the value of <code>HISTIGNORE</code>.
+</p>
+
+</div>
+
+<h3 class="sectionedit144" id="histsize">HISTSIZE<a class="anchorjs-link " href="#histsize" aria-label="Anchor link for: histsize" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>HISTSIZE</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">if unset  </td><th class="col2">Default: </th><td class="col3 leftalign">set at compile time (default 500)  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The number of commands to remember in the command history.
+</p>
+
+<p>
+If the number is set to 0 (zero), then the history list is disabled. If 
+the number is set to any negative number, then the history list is 
+unlimited.
+</p>
+
+</div>
+
+<h3 class="sectionedit146" id="histtimeformat">HISTTIMEFORMAT<a class="anchorjs-link " href="#histtimeformat" aria-label="Anchor link for: histtimeformat" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>HISTTIMEFORMAT</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+If this variable is set and not null, its value is used as a format string
+for <code>strftime(3)</code> to print the time stamp associated with each history
+entry displayed by the history builtin.
+</p>
+
+<p>
+If this variable is set, time stamps are written to the history file so
+they may be preserved across shell sessions. This uses the history comment
+character to distinguish timestamps from other history lines.
+</p>
+
+</div>
+
+<h3 class="sectionedit148" id="home">HOME<a class="anchorjs-link " href="#home" aria-label="Anchor link for: home" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>HOME</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The home directory of the current user.
+</p>
+
+<p>
+The default argument for the <a href="https://wiki.bash-hackers.org/commands/builtin/cd" class="wikilink1" title="commands:builtin:cd">cd builtin command</a>.
+</p>
+
+<p>
+The value of this variable is also used when performing
+<a href="https://wiki.bash-hackers.org/syntax/expansion/tilde" class="wikilink1" title="syntax:expansion:tilde">tilde expansion</a>.
+</p>
+
+</div>
+
+<h3 class="sectionedit150" id="hostfile">HOSTFILE<a class="anchorjs-link " href="#hostfile" aria-label="Anchor link for: hostfile" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>HOSTFILE</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Contains the name of a file in the same format as <code>/etc/hosts</code> that should be
+read when the shell needs to complete a hostname.
+</p>
+
+<p>
+The list of possible hostname completions may be changed while the shell is
+running. the next time hostname completion is attempted after the value is
+changed, Bash adds the contents of the new file to the existing list.
+</p>
+
+<p>
+If <code>HOSTFILE</code> is set, but has no value, or does not name a readable file,
+Bash attempts to read <code>/etc/hosts</code> to obtain the list of possible hostname
+completions.
+</p>
+
+<p>
+When <code>HOSTFILE</code> is unset, the hostname list is cleared.
+</p>
+
+</div>
+
+<h3 class="sectionedit152" id="ifs">IFS<a class="anchorjs-link " href="#ifs" aria-label="Anchor link for: ifs" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>IFS</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3"><code>&lt;space&gt;&lt;tab&gt;&lt;newline&gt;</code></td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The Internal Field Separator that is used for word splitting
+after expansion and to split lines into words with the read
+builtin command.
+</p>
+
+</div>
+
+<h3 class="sectionedit154" id="ignoreeof">IGNOREEOF<a class="anchorjs-link " href="#ignoreeof" aria-label="Anchor link for: ignoreeof" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>IGNOREEOF</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">10 (when invalid)  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Controls the action of an interactive shell on receipt of an <code><abbr title="" data-original-title="End of file">EOF</abbr></code>
+character (e.g. by Ctrl-D) as the sole input.
+</p>
+
+<p>
+If set, the value is the number of consecutive <abbr title="" data-original-title="End of file">EOF</abbr> characters which must be
+typed as the first characters on an input line before Bash exits.
+</p>
+
+<p>
+If the variable exists but does not have a numeric value, or has no value, the
+default value is 10.
+</p>
+
+<p>
+If it does not exist, <code><abbr title="" data-original-title="End of file">EOF</abbr></code> signifies the end of input to the shell.
+</p>
+
+</div>
+
+<h3 class="sectionedit156" id="inputrc">INPUTRC<a class="anchorjs-link " href="#inputrc" aria-label="Anchor link for: inputrc" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>INPUTRC</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The filename for the readline startup file, overriding the default
+of <code>~/.inputrc</code>.
+</p>
+
+</div>
+
+<h3 class="sectionedit158" id="lang">LANG<a class="anchorjs-link " href="#lang" aria-label="Anchor link for: lang" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>LANG</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Used to determine the locale category for any category not
+specifically selected with a variable starting with <code>LC_</code>.
+</p>
+
+</div>
+
+<h3 class="sectionedit160" id="lc_all">LC_ALL<a class="anchorjs-link " href="#lc_all" aria-label="Anchor link for: lc_all" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>LC_ALL</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+This variable overrides the value of <code>LANG</code> and any other <code>LC_</code>
+variable specifying a locale category.
+</p>
+
+</div>
+
+<h3 class="sectionedit162" id="lc_collate">LC_COLLATE<a class="anchorjs-link " href="#lc_collate" aria-label="Anchor link for: lc_collate" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>LC_COLLATE</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+This variable determines the collation order used when sorting
+the results of pathname expansion, and determines the behavior
+of range expressions, equivalence classes, and collating
+sequences within pathname expansion and pattern matching.
+</p>
+
+</div>
+
+<h3 class="sectionedit164" id="lc_ctype">LC_CTYPE<a class="anchorjs-link " href="#lc_ctype" aria-label="Anchor link for: lc_ctype" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>LC_CTYPE</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+This variable determines the interpretation of characters and
+the behavior of character classes within pathname expansion and
+pattern matching.
+</p>
+
+</div>
+
+<h3 class="sectionedit166" id="lc_messages">LC_MESSAGES<a class="anchorjs-link " href="#lc_messages" aria-label="Anchor link for: lc_messages" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>LC_MESSAGES</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+This variable determines the locale used to translate double-
+quoted strings preceded by a <code>$</code>.
+</p>
+
+</div>
+
+<h3 class="sectionedit168" id="lc_numeric">LC_NUMERIC<a class="anchorjs-link " href="#lc_numeric" aria-label="Anchor link for: lc_numeric" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>LC_NUMERIC</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+This variable determines the locale category used for number
+formatting.
+</p>
+
+</div>
+
+<h3 class="sectionedit170" id="lines">LINES<a class="anchorjs-link " href="#lines" aria-label="Anchor link for: lines" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>LINES</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">on <code>SIGWINCH</code>  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Used by the select compound command to determine the column
+length for printing selection lists. Automatically set upon
+receipt of a <code>SIGWINCH</code>.
+</p>
+
+</div>
+
+<h3 class="sectionedit172" id="mail">MAIL<a class="anchorjs-link " href="#mail" aria-label="Anchor link for: mail" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>MAIL</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">system-dependent  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+If this parameter is set to a file or directory name and the
+<code>MAILPATH</code> variable is not set, Bash informs the user of the
+arrival of mail in the specified file or Maildir-format direc‐
+tory.
+</p>
+
+</div>
+
+<h3 class="sectionedit174" id="mailcheck">MAILCHECK<a class="anchorjs-link " href="#mailcheck" aria-label="Anchor link for: mailcheck" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>MAILCHECK</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">60  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Specifies how often (in seconds) Bash checks for mail.
+</p>
+
+<p>
+When it is time to check for mail, the shell does so before
+displaying the primary prompt.
+</p>
+
+<p>
+If this variable is unset, or set to a value that is not a number
+greater than or equal to zero, the shell disables mail checking.
+</p>
+
+</div>
+
+<h3 class="sectionedit176" id="mailpath">MAILPATH<a class="anchorjs-link " href="#mailpath" aria-label="Anchor link for: mailpath" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>MAILPATH</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">system-dependent  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+A colon-separated list of file names to be checked for mail.
+</p>
+
+<p>
+The message to be printed when mail arrives in a particular file
+may be specified by separating the file name from the message
+with a '?' (question mark).
+</p>
+
+<p>
+When used in the text of the message, <code>$_</code> expands to
+the name of the current mailfile.
+</p>
+
+<p>
+Example content:
+</p><pre class="code">/var/mail/bfox?"You have mail":~/shell-mail?"$_ has mail!"</pre>
+
+<p></p>
+
+</div>
+
+<h3 class="sectionedit178" id="opterr">OPTERR<a class="anchorjs-link " href="#opterr" aria-label="Anchor link for: opterr" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>OPTERR</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">yes  </td><th class="col2">Default: </th><td class="col3 leftalign">1 (set on startup)  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+If set to the value 1, Bash displays error messages generated by
+the <a href="https://wiki.bash-hackers.org/commands/builtin/getopts" class="wikilink2" title="commands:builtin:getopts" rel="nofollow">getopts builtin command</a>.
+</p>
+
+<p>
+<code>OPTERR</code> is initialized to 1 each time the shell is invoked or a
+shell script is executed.
+</p>
+
+</div>
+
+<h3 class="sectionedit180" id="path">PATH<a class="anchorjs-link " href="#path" aria-label="Anchor link for: path" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>PATH</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">system-dependent (set on compile time)  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The search path for commands. This is a colon-separated list of directories in which the shell looks for commands.
+</p>
+
+<p>
+A zero-length (null) directory name in the value of <code>PATH</code> indicates the current directory.
+</p>
+
+<p>
+A null directory name may appear as two adjacent colons, or as an initial or
+trailing colon.
+</p>
+
+<p>
+There can be a static path compiled in for use in a restricted shell.
+</p>
+
+</div>
+
+<h3 class="sectionedit182" id="posixly_correct">POSIXLY_CORRECT<a class="anchorjs-link " href="#posixly_correct" aria-label="Anchor link for: posixly_correct" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>POSIXLY_CORRECT</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+If this variable is in the environment when Bash starts, the
+shell enters posix mode before reading the startup files, as if
+the <code>–posix</code> invocation option had been supplied.
+</p>
+
+<p>
+If it is set while the shell is running, Bash enables posix mode, as if the
+command <code>set -o posix</code> had been executed.
+</p>
+
+</div>
+
+<h3 class="sectionedit184" id="prompt_command">PROMPT_COMMAND<a class="anchorjs-link " href="#prompt_command" aria-label="Anchor link for: prompt_command" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>PROMPT_COMMAND</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+If set, the value is executed as a command prior to issuing each
+primary prompt.
+</p>
+
+</div>
+
+<h3 class="sectionedit186" id="prompt_dirtrim">PROMPT_DIRTRIM<a class="anchorjs-link " href="#prompt_dirtrim" aria-label="Anchor link for: prompt_dirtrim" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>PROMPT_DIRTRIM</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+If set to a number greater than zero, the value is used as the
+number of trailing directory components to retain when expanding
+the <code>\w</code> and <code>\W</code> prompt string escapes.
+</p>
+
+<p>
+Characters removed are replaced with an ellipsis.
+</p>
+
+</div>
+
+<h3 class="sectionedit188" id="ps0">PS0<a class="anchorjs-link " href="#ps0" aria-label="Anchor link for: ps0" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>PS0</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">4.4.0   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">if unset  </td><th class="col2">Default: </th><td class="col3 leftalign">"<code></code>"  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+Expanded and displayed by interactive shells after reading a complete command but before executing it.
+</p>
+
+</div>
+
+<h3 class="sectionedit190" id="ps1">PS1<a class="anchorjs-link " href="#ps1" aria-label="Anchor link for: ps1" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>PS1</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">if unset  </td><th class="col2">Default: </th><td class="col3 leftalign">"<code>\s-\v\$ </code>"  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The value of this parameter is expanded and used as the primary prompt string.
+</p>
+
+</div>
+
+<h3 class="sectionedit192" id="ps2">PS2<a class="anchorjs-link " href="#ps2" aria-label="Anchor link for: ps2" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>PS2</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">if unset  </td><th class="col2">Default: </th><td class="col3 leftalign">"<code>&gt; </code>"  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The value of this parameter is expanded as with PS1 and used as
+the secondary prompt string.
+</p>
+
+</div>
+
+<h3 class="sectionedit194" id="ps3">PS3<a class="anchorjs-link " href="#ps3" aria-label="Anchor link for: ps3" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>PS3</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The value of this parameter is used as the prompt for the select
+command.
+</p>
+
+</div>
+
+<h3 class="sectionedit196" id="ps4">PS4<a class="anchorjs-link " href="#ps4" aria-label="Anchor link for: ps4" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>PS4</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">if unset  </td><th class="col2">Default: </th><td class="col3 leftalign">"<code>+ </code>"  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The value of this parameter is expanded as with <code>PS1</code> and the
+value is printed before each command Bash displays during an
+execution trace. The first character of <code>PS4</code> is replicated multiple
+times, as necessary, to indicate multiple levels of indirection.
+</p>
+
+</div>
+
+<h3 class="sectionedit198" id="shell">SHELL<a class="anchorjs-link " href="#shell" aria-label="Anchor link for: shell" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>SHELL</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The full pathname to the shell is kept in this environment variable.
+If it is not set when the shell starts, Bash assigns the full pathname
+of the current user's login shell.
+</p>
+
+</div>
+
+<h3 class="sectionedit200" id="timeformat">TIMEFORMAT<a class="anchorjs-link " href="#timeformat" aria-label="Anchor link for: timeformat" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>TIMEFORMAT</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The value of this parameter is used as a format string specifying how the
+timing information for pipelines prefixed with the time reserved word should
+be displayed.
+</p>
+
+<p>
+The % character introduces an escape sequence that is expanded
+to a time value or other information. The escape sequences and their meanings are
+as follows, the braces denote optional portions:
+</p>
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<td class="col0 leftalign"><code>%%</code>         </td><td class="col1 leftalign">a literal <code>%</code> (percent sign)                             </td>
+	</tr>
+	<tr class="row1">
+		<td class="col0 leftalign"><code>%[p][l]R</code>   </td><td class="col1 leftalign">elapsed time in seconds                                    </td>
+	</tr>
+	<tr class="row2">
+		<td class="col0 leftalign"><code>%[p][l]U</code>   </td><td class="col1 leftalign">number of CPU seconds spent in user mode                   </td>
+	</tr>
+	<tr class="row3">
+		<td class="col0 leftalign"><code>%[p][l]S</code>   </td><td class="col1 leftalign">number of CPU seconds spent in system mode                 </td>
+	</tr>
+	<tr class="row4">
+		<td class="col0 leftalign"><code>%P</code>         </td><td class="col1 leftalign">CPU percentage, computed as <code>(%U + %S) / %R</code>             </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The optional modifiers (p and l) are:
+</p>
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<td class="col0 leftalign"><code>p</code>  </td><td class="col1 leftalign">A
+ digit specifying the precision. A value of 0 causes no decimal point or
+ fraction to be output. At most three digits after the decimal point are
+ shown. If not specified, the value 3 is used.  </td>
+	</tr>
+	<tr class="row1">
+		<td class="col0 leftalign"><code>l</code>  </td><td class="col1 leftalign">A longer format, including minutes, of the form MMmSS.FFs. The value of p determines whether or not the fraction is included.  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+If this variable is not set, Bash acts as if it had the value
+</p><pre class="code">$'\nreal\t%3lR\nuser\t%3lU\nsys%3lS'</pre>
+
+<p></p>
+
+<p>
+If the value is null, no timing information is displayed.
+</p>
+
+<p>
+A trailing newline is added when the format string is displayed.
+</p>
+
+</div>
+
+<h3 class="sectionedit204" id="tmout">TMOUT<a class="anchorjs-link " href="#tmout" aria-label="Anchor link for: tmout" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>TMOUT</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">2.05b   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+If set to a value greater than zero, <code>TMOUT</code> is treated as the
+default timeout for the <a href="https://wiki.bash-hackers.org/commands/builtin/read" class="wikilink1" title="commands:builtin:read">read builtin command</a>.
+</p>
+
+<p>
+The <a href="https://wiki.bash-hackers.org/commands/builtin/select" class="wikilink2" title="commands:builtin:select" rel="nofollow">select command</a> terminates if input does not
+arrive after <code>TMOUT</code> seconds when input is coming from a terminal.
+</p>
+
+<p>
+In an interactive shell, the value is interpreted as the number of seconds to
+wait for input after issuing the primary prompt. Bash terminates after waiting for
+that number of seconds if input does not arrive.
+</p>
+
+</div>
+
+<h3 class="sectionedit206" id="tmpdir">TMPDIR<a class="anchorjs-link " href="#tmpdir" aria-label="Anchor link for: tmpdir" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>TMPDIR</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+If set, Bash uses its value as the name of a directory in which
+Bash creates temporary files for the shell's use.
+</p>
+
+</div>
+
+<h3 class="sectionedit208" id="auto_resume">auto_resume<a class="anchorjs-link " href="#auto_resume" aria-label="Anchor link for: auto_resume" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>auto_resume</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+This variable controls how the shell interacts with the user and
+job control. If this variable is set, single word simple commands
+without redirections are treated as candidates for resumption
+of an existing stopped job. There is no ambiguity allowed;
+if there is more than one job beginning with the string typed,
+the job most recently accessed is selected. The name of a
+stopped job, in this context, is the command line used to start
+it. If set to the value exact, the string supplied must match
+the name of a stopped job exactly; if set to substring, the
+string supplied needs to match a substring of the name of a
+stopped job. The substring value provides functionality analogous
+to the %? job identifier.
+</p>
+
+<p>
+If set to any other value, the supplied string must be a prefix of a
+stopped job's name; this provides functionality analogous to the
+<code>%string</code> job identifier.
+</p>
+
+</div>
+
+<h3 class="sectionedit210" id="histchars">histchars<a class="anchorjs-link " href="#histchars" aria-label="Anchor link for: histchars" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1; padding-left: 0.375em;"></a></h3>
+<div class="level3">
+<div class="table-responsive"><table class="inline table table-striped table-condensed">
+	<tbody><tr class="row0">
+		<th class="col0 leftalign">Variable:  </th><td class="col1 leftalign"><code>histchars</code>  </td><th class="col2 leftalign">Since:  </th><td class="col3 leftalign">unknown   </td>
+	</tr>
+	<tr class="row1">
+		<th class="col0 leftalign">Type:  </th><td class="col1 leftalign">normal variable  </td><th class="col2 leftalign">Read-only:  </th><td class="col3 leftalign">no  </td>
+	</tr>
+	<tr class="row2">
+		<th class="col0 leftalign">Set by Bash:  </th><td class="col1 leftalign">no  </td><th class="col2">Default: </th><td class="col3 leftalign">n/a  </td>
+	</tr>
+</tbody></table></div>
+
+<p>
+The two or three characters which control history expansion and
+tokenization.
+</p>
+
+<p>
+The first character is the history expansion character,
+the character which signals the start of a history expansion, normally '!' (exlamation mark).
+</p>
+
+<p>
+The second character is the quick substitution character, which is used as
+shorthand for re-running the previous command entered, substi tuting one string for
+another in the command. The default is '^' (carret).
+</p>
+
+<p>
+The optional third character is the character which indicates that the remainder of
+the line is a comment when found as the first character of a word, normally '#' (hash mark).
+The history comment character causes history substitution to be skipped for the
+remaining words on the line. It does not necessarily cause the shell parser to treat the
+rest of the line as a comment.
+</p>
+
+</div>
+
+
+</div><!-- /CONTENT --></div>
+          </div>
+        </div>
+
+        <div class="small text-right">
+
+                    <span class="docInfo">
+            <ul class="list-inline"><li><i class="fa fa-fw fa-file-text-o text-muted"></i> <span title="syntax/shellvars.txt">syntax/shellvars.txt</span></li><li><i class="fa fa-fw fa-calendar text-muted"></i> Last modified: <span title="2019/11/02 14:56">2019/11/02 14:56</span></li><li class="text-muted">by ersen</li></ul>          </span>
+          
+          
+        </div>
+
+      </article>
+
+      
+    </main>
+
+    
+
+
+
+
+
+    
+
+    
+
+  </div>
+
+
+
+
+
+</body></html>

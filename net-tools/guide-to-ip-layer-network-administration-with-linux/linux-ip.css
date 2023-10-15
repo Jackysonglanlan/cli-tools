@@ -1,0 +1,111 @@
+/* Note that this file is for the XHTML output of the source doc */
+
+/* these are the internal document links */
+*:link {
+  color: #44b9d6;
+  text-decoration: none;
+}
+*:visited {
+  color: #44b9d6;
+  text-decoration: none;
+}
+
+BODY {
+  color: #d5dbdb;
+  background-color: #2a2e33;
+  font-size: 1.1rem;
+  line-height: 1.5em;
+}
+
+table {
+  background-color: #2a2e33;
+}
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+/*                                                                 */
+/*                    variable list attributes                     */
+/*                                                                 */
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+pre {
+  color: white;
+  background-color: #333333;
+  font-size: 1rem;
+}
+
+pre > code.prompt {
+  color: #c397d8;
+}
+
+pre > strong.userinput {
+  color: #e68b44;
+}
+
+div.variablelist {
+  margin: 1em 5% 1em 5%;
+}
+
+.calloutlist {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  margin: 0em 0% 0.2em 0%;
+}
+
+/*
+.calloutlist table {
+        background-color : #dff                      ;
+}
+
+.example table {
+        background-color : #9cc                      ;
+}
+*/
+
+.variablelist .term {
+  font-weight: bold;
+}
+
+.variablelist .emphasis {
+  font-weight: bold;
+}
+
+p.copyright {
+  padding-left: 1em;
+  padding-right: 1em;
+  margin: 0em 0% 0.2em 0%;
+  font-size: 0.7em;
+  font-family: Verdana, Arial, Helvetica;
+  text-align: right;
+  color: #808080;
+}
+
+.revhistory {
+  display: none;
+  width: 100%;
+  /* position      :   fixed                      ; */
+  /* bottom        :   -0px                       ; */
+}
+
+.revhistory table {
+  padding-left: 0em;
+  padding-right: 0em;
+  margin: 0em 0% 0em 0%;
+}
+
+.revhistory td {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  margin: 0em 0% 0em 0%;
+}
+
+.revhistory tr {
+  padding-left: 0em;
+  padding-right: 0em;
+  margin: 0em 0% 0em 0%;
+}
+
+.revhistory > * {
+  font-size: 0.5em;
+  text-align: right;
+  color: #808080;
+}
