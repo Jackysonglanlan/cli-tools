@@ -1,0 +1,41 @@
+######
+## Warning: gitlab.dongfang.com 的共享 runner 不能 ping 通测试环境，所以只能另找一个可以 ping 通的 runner 才能做
+######
+
+##### shared config
+
+.common:
+  tags:
+    - docker
+
+##### global config
+
+stages:
+  - upload
+  - prompt
+  - restart
+
+##### stage config
+
+## Warning:
+#
+# 1. 直接在 script 中写 echo 时，内容不能带 ':' 号
+
+upload-patch:
+  extends: .common
+  stage: upload
+  script:
+    - ./automation-scripts/ci-helper.sh
+
+prompt:
+  extends: .common
+  stage: prompt
+  script:
+    - echo "请到 10.81.132.103:6300 安装补丁，然后继续"
+
+restart-igix:
+  extends: .common
+  stage: restart
+  when: manual
+  script:
+    - echo "restarting..."
