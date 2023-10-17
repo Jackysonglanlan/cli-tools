@@ -2,13 +2,19 @@
 
 个人工作 Sprint Board。
 
-## 总体设计
+## 使用方式
 
-### general idea
+```console
+$ ./build.sh add_task 任务描述 # 会自动在 board.md 中的 "Tasks" 段下添加一条记录，并自动在 TODO 文件夹生成对应的 task 目录
+```
+
+## general idea
 
 我想要一个极简的 sprint board 系统，来追踪每天要做的事情，尽量使用已经有的东西，而不是过多的开发功能。
 
 最重要的一点，**我不想启动一个服务来做这件事，最好像 `static site` 一样，可以离线工作，不需要维护任何事情**
+
+## 总体设计
 
 ### 基于文件夹的 board 表达系统
 

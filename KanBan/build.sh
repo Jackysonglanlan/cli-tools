@@ -69,12 +69,12 @@ add_task() {
   {print}
   '
 
+  # TODO 现在是输出到 stdout，测试好以后写入文件
   awk "$script" board.md
 
   yellow "[make task dir] $task_id in TODO"
   mkdir -p "TODO/$task_id"
 
-  yellow "[sort out] in DONE"
   sort_out
 }
 
@@ -100,6 +100,7 @@ add_task() {
 # $1: dir to sort out, default to "DONE"
 sort_out() {
   local target_dir=${1:-DONE} # 最容易出现这个问题的就是 DONE，所以默认值是它
+  yellow "[sort out] in $target_dir"
 
   while read -r dir; do
     local "name"=$(basename "$dir")
@@ -107,7 +108,7 @@ sort_out() {
       local date_name=$(date -r "$name" '+%Y/%m' 2>/dev/null)
       local gene_dir="$target_dir/$date_name"
       mkdir -p "$gene_dir"
-      yellow "[move] $dir to $gene_dir"
+      yellow "[moving] $dir to $gene_dir"
       mv "$dir" "$gene_dir"
     fi
   done <<< "$(find "$target_dir" -type d -maxdepth 1)"
