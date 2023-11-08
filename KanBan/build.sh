@@ -45,11 +45,61 @@ init
 
 ##### private #####
 
+# 看板模板，新建看板文件时使用
+BOARD_TEMPLATE="""
+# Sprint board
 
+## IMPULSION
+
+**冲动类事情: 比如突然扔过来一堆文件，大概说了一下要做什么事情，或说先看看熟悉情况，需求描述模糊，未达到可以做的程度**
+
+| desc     | context | ask who |
+| -------- | ------- | ------- |
+| 事件描述 | 上下文  | 对接人  |
+
+## TODO Tasks
+
+| id         | task                                | ask who | desc                              | due   |
+| ---------- | ----------------------------------- | ------- | --------------------------------- | ----- |
+
+## DOING Tasks
+
+| id         | task                                | ask who | desc                              | due   |
+| ---------- | ----------------------------------- | ------- | --------------------------------- | ----- |
+
+<p>
+
+**四维象限**
+
+| .      | 重要 | 不重要 |
+| ------ | ---- | ------ |
+| 紧急   |      |        |
+| 不紧急 |      |        |
+
+## Done Tasks
+
+| id         | task                                | ask who | desc                              | due   |
+| ---------- | ----------------------------------- | ------- | --------------------------------- | ----- |
+
+"""
+
+# 新建看板文件，如果已经有了，则忽略
+#
+# $1: file_name 看板文件名
+_create_board_file_if_none(){
+  local file_name=$1
+
+  if [[ -e $file_name ]]; then
+    yellow "[create board file] file exist: $file_name"
+  else
+    green "[create board file] $file_name"
+    echo "$BOARD_TEMPLATE" > "$file_name"
+  fi
+}
 
 ##### public #####
 
-# 在 board.md 中的 Task 表格中添加一条记录
+# 在 board-$year.md 中的 Task 表格中添加一条记录，其中 year 为执行命令时的年份
 #
 # $1: 任务名，即 task 列，默认为 '任务描述 xxx'。due 列为当前日期 + 3 days
 add_task() {
@@ -58,19 +108,23 @@ add_task() {
   local task_id=$(date +'%s')
   local taskRow="| $task_id | $name |     |      | $(date -v+3d +'%m.%d') |"
 
-  yellow "[adding task] to board.md:\n  -> $taskRow"
+  local board_file="board-$(date +'%Y').md"
+
+  _create_board_file_if_none "$board_file"
+
+  yellow "[adding task] to $board_file:\n  -> $taskRow"
 
   # 用 awk 添加一条表格记录到 board.md
 
   local script='
-  /^## Task/ {inTask = 1}
+  /^## TODO Task/ {inTask = 1}
   inTask == 1 && /^\| / {inTask = 0; inRow = 1;}
   inRow == 1 && length($0) == 0 {print "'$taskRow'"; inRow = 0}
   {print}
   '
+  # 上面第 3 行，inRow == 1 并且当前行是空行，代表处于 TODO Tasks 表格的末尾行
 
-  # TODO 现在是输出到 stdout，测试好以后写入文件
-  awk "$script" board.md
+  awk -i inplace -v INPLACE_SUFFIX=.bak "$script" "$board_file"
 
   yellow "[make task dir] $task_id in TODO"
   mkdir -p "TODO/$task_id"
@@ -105,7 +159,7 @@ sort_out() {
   while read -r dir; do
     local "name"=$(basename "$dir")
     if [[ "$name" =~ [0-9]{10,} ]]; then # 只有 > 10 位 的数字才是 unix timestamp
-      local date_name=$(date -r "$name" '+%Y/%m' 2>/dev/null)
+      local date_name=$(date -r "$name" '+%Y/%m' 2>/dev/null) # 注意 Y/M 恰好形成文件夹结构
       local gene_dir="$target_dir/$date_name"
       mkdir -p "$gene_dir"
       yellow "[moving] $dir to $gene_dir"
