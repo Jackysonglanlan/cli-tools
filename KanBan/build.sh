@@ -37,63 +37,34 @@ use_red_green_echo 'builder'
 
 ##### global #####
 
-# 创建"阶段"目录
+_CURR_YEAR_=$(date +'%Y')
+
 init() {
-  mkdir -p {ARCHIVE,TODO,DOING,DONE,IMPULSION}
+  # 创建不同类别 Task 的资料文件夹目录
+  mkdir -p {LONGTERM,ARCHIVE,TODO,DOING,DONE,IMPULSION}
 }
 init
 
 ##### private #####
 
-# 看板模板，新建看板文件时使用
-BOARD_TEMPLATE="""
-# Sprint board
-
-## IMPULSION
-
-**冲动类事情: 比如突然扔过来一堆文件，大概说了一下要做什么事情，或说先看看熟悉情况，需求描述模糊，未达到可以做的程度**
-
-| desc     | context | ask who |
-| -------- | ------- | ------- |
-| 事件描述 | 上下文  | 对接人  |
-
-## TODO Tasks
-
-| id         | task                                | ask who | desc                              | due   |
-| ---------- | ----------------------------------- | ------- | --------------------------------- | ----- |
-
-## DOING Tasks
-
-| id         | task                                | ask who | desc                              | due   |
-| ---------- | ----------------------------------- | ------- | --------------------------------- | ----- |
-
-<p>
-
-**四维象限**
-
-| .      | 重要 | 不重要 |
-| ------ | ---- | ------ |
-| 紧急   |      |        |
-| 不紧急 |      |        |
-
-## Done Tasks
-
-| id         | task                                | ask who | desc                              | due   |
-| ---------- | ----------------------------------- | ------- | --------------------------------- | ----- |
-
-"""
-
 # 新建看板文件，如果已经有了，则忽略
 #
 # $1: file_name 看板文件名
-_create_board_file_if_none(){
-  local file_name=$1
+_create_board_file_if_none() {
+  local file_name="$1"
 
   if [[ -e $file_name ]]; then
     yellow "[create board file] file exist: $file_name"
   else
-    green "[create board file] $file_name"
-    echo "$BOARD_TEMPLATE" > "$file_name"
+    green "[create board file] file created: $file_name"
+
+    # 看板模板，新建看板文件时使用
+    local template=$(cat ./board/board.template)
+
+    # 模板参数替换，生成最终内容
+    template=${template//\{\{year\}\}/$_CURR_YEAR_}
+
+    echo "$template" > "$file_name"
   fi
 }
 
@@ -101,18 +72,18 @@ _create_board_file_if_none(){
 
 # 在 board-$year.md 中的 Task 表格中添加一条记录，其中 year 为执行命令时的年份
 #
-# $1: 任务名，即 task 列，默认为 '任务描述 xxx'。due 列为当前日期 + 3 days
+# $1: 任务名，即 task 列，默认为 '任务描述 xxx'。due 列为当前日期 + 1 week
 add_task() {
   local name=${1:-'任务描述 xxx'}
   # 生成 task id，unit timestamp
   local task_id=$(date +'%s')
-  local taskRow="| $task_id | $name |     |      | $(date -v+3d +'%m.%d') |"
+  local taskRow="| $task_id | $name |     |      | $(date -v+1w +'%m.%d') |"
 
-  local board_file="board-$(date +'%Y').md"
+  local board_file="./board/board-${_CURR_YEAR_}.md"
 
   _create_board_file_if_none "$board_file"
 
-  yellow "[adding task] to $board_file:\n  -> $taskRow"
+  green "[adding task] to $board_file:\n  -> $taskRow"
 
   # 用 awk 添加一条表格记录到 board.md
 
@@ -126,7 +97,7 @@ add_task() {
 
   awk -i inplace -v INPLACE_SUFFIX=.bak "$script" "$board_file"
 
-  yellow "[make task dir] $task_id in TODO"
+  green "[make task dir] $task_id in TODO"
   mkdir -p "TODO/$task_id"
 
   sort_out
@@ -154,7 +125,7 @@ add_task() {
 # $1: dir to sort out, default to "DONE"
 sort_out() {
   local target_dir=${1:-DONE} # 最容易出现这个问题的就是 DONE，所以默认值是它
-  yellow "[sort out] in $target_dir"
+  green "[sort out] in $target_dir"
 
   while read -r dir; do
     local "name"=$(basename "$dir")
@@ -162,7 +133,7 @@ sort_out() {
       local date_name=$(date -r "$name" '+%Y/%m' 2>/dev/null) # 注意 Y/M 恰好形成文件夹结构
       local gene_dir="$target_dir/$date_name"
       mkdir -p "$gene_dir"
-      yellow "[moving] $dir to $gene_dir"
+      green "[moving] $dir to $gene_dir"
       mv "$dir" "$gene_dir"
     fi
   done <<< "$(find "$target_dir" -type d -maxdepth 1)"

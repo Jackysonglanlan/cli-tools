@@ -1,0 +1,74 @@
+# Jacky's Sprint board {{year}}
+
+<center>
+<h2> Sub-Title </h2>
+</center>
+
+## LONGTERM Tasks
+
+<b style="color: darkgoldenrod;">
+**长期事项: 没有 due date，暂时空闲时做的事情，id 手工维护**
+</b>
+
+| id         | task                                | ask who | desc                              | due   |
+| ---------- | ----------------------------------- | ------- | --------------------------------- | ----- |
+
+## IMPULSION
+
+<b style="color: darkgoldenrod;">
+冲动类事情:<br>
+比如突然扔过来一堆文件，大概说了一下要做什么事情，或说先看看，熟悉情况。事件特点是需求描述模糊，前置条件也不满足，未达到可以落地做的程度
+</b>
+
+| desc     | context | ask who |
+| -------- | ------- | ------- |
+| 事件描述 | 上下文  | 对接人  |
+
+<b style="color: red;">
+Tips: 冲动类事情 -> TODO 类事情，使用 `./build.sh add_task $desc`，然后手工维护资料文件夹。
+</b>
+
+## TODO Tasks
+
+<b style="color: darkgoldenrod;">
+**确定要做的事情: 有明确的需求、工作前提完备，可以上手开工，id 为添加当天的 unix timestamp**
+</b>
+
+<b style="color: red;">
+Tips: 从 TODO 类事情开始，表头都一样，所以表内容可以直接在表格间移动，方便操作。
+</b>
+
+| id         | task                                | ask who | desc                              | due   |
+| ---------- | ----------------------------------- | ------- | --------------------------------- | ----- |
+
+<p>
+
+**四维象限**
+
+| .                               | <b style="color: red;">重要</b> | 不重要 |
+| ------------------------------- | ------------------------------- | ------ |
+| <b style="color: red;">紧急</b> |                                 |        |
+| 不紧急                          |                                 |        |
+
+## DONE Tasks
+
+<b style="color: darkgray;">
+
+| id         | task                                | ask who | desc                              | due   |
+| ---------- | ----------------------------------- | ------- | --------------------------------- | ----- |
+
+</b>
+
+## ARCHIVE Tasks
+
+<b style="color: darkgoldenrod;">
+**事后需要存档的工作**
+</b>
+
+<b style="color: darkgray;">
+
+| id  | task | ask who | desc | due |
+| --- | ---- | ------- | ---- | --- |
+
+</b>
+
