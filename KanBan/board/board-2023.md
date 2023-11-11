@@ -15,7 +15,7 @@
 | 1   | 研究 igix 平台内部功能，以支持研发同事     | NA      | 比如对外暴露的 API(如何查询岗位、人员权限、如何整合进 igix 内部工作流等等) |
 | 2   | 技术支持生产环境的部署，以支持项目顺利上线 | NA      |
 
-## IMPULSION
+## IMPULSION Tasks
 
 <b style="color: darkgoldenrod;">
 冲动类事情:   
@@ -33,7 +33,7 @@ Tips: 冲动类事情 -> TODO 类事情，使用 `./build.sh add_task $desc`，�
 ## TODO Tasks
 
 <b style="color: darkgoldenrod;">
-**确定要做的事情: 有明确的需求、工作前提完备，可以上手开工，id 为添加当天的 unix timestamp**
+**确定要做，但尚未开工的事情: 有明确的需求、工作前提完备，可以上手开工，id 为添加当天的 unix timestamp**
 </b>
 
 <b style="color: red;">

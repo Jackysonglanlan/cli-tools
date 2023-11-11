@@ -31,7 +31,7 @@ Tips: 冲动类事情 -> TODO 类事情，使用 `./build.sh add_task $desc`，�
 ## TODO Tasks
 
 <b style="color: darkgoldenrod;">
-**确定要做的事情: 有明确的需求、工作前提完备，可以上手开工，id 为添加当天的 unix timestamp**
+**确定要做，但尚未开工的事情: 有明确的需求、工作前提完备，可以上手开工，id 为添加当天的 unix timestamp**
 </b>
 
 <b style="color: red;">

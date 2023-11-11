@@ -38,6 +38,7 @@ use_red_green_echo 'builder'
 ##### global #####
 
 _CURR_YEAR_=$(date +'%Y')
+BOARD_FILE="./board/board-${_CURR_YEAR_}.md"
 
 init() {
   # 创建不同类别 Task 的资料文件夹目录
@@ -50,7 +51,7 @@ init
 # 新建看板文件，如果已经有了，则忽略
 #
 # $1: file_name 看板文件名
-_create_board_file_if_none() {
+_create_BOARD_FILE_if_none() {
   local file_name="$1"
 
   if [[ -e $file_name ]]; then
@@ -68,39 +69,106 @@ _create_board_file_if_none() {
   fi
 }
 
-##### public #####
+# $1: script awk script
+# $2: file   file path to modify
+_awk_modify() {
+  local script=$1
+  local file=$2
+  awk -i inplace -v INPLACE_SUFFIX=.bak "$script" "$file"
+}
 
-# 在 board-$year.md 中的 Task 表格中添加一条记录，其中 year 为执行命令时的年份
+# 添加一条冲动型事件
 #
-# $1: 任务名，即 task 列，默认为 '任务描述 xxx'。due 列为当前日期 + 1 week
-add_task() {
-  local name=${1:-'任务描述 xxx'}
-  # 生成 task id，unit timestamp
-  local task_id=$(date +'%s')
-  local taskRow="| $task_id | $name |     |      | $(date -v+1w +'%m.%d') |"
+# $1: table_name
+# $2: record
+_add_record_to_table() {
+  local table_name=${1:?missing \$1: table_name}
+  local record=${2:?missing param \$2: record}
+  local task_id=${3:?missing param \$3: task_id}
 
-  local board_file="./board/board-${_CURR_YEAR_}.md"
+  _create_BOARD_FILE_if_none "$BOARD_FILE"
 
-  _create_board_file_if_none "$board_file"
-
-  green "[adding task] to $board_file:\n  -> $taskRow"
+  green "[adding record] to $BOARD_FILE:\n  -> $record"
 
   # 用 awk 添加一条表格记录到 board.md
-
-  local script='
-  /^## TODO Task/ {inTask = 1}
-  inTask == 1 && /^\| / {inTask = 0; inRow = 1;}
-  inRow == 1 && length($0) == 0 {print "'$taskRow'"; inRow = 0}
+  local script="""
+  /^## $table_name/ {inSection = 1}
+  inSection == 1 && /^\| / {inTable = 1; inSection = 0;}
+  inTable == 1 && length(\$0) == 0 {print \"$record\"; inTable = 0}
   {print}
-  '
-  # 上面第 3 行，inRow == 1 并且当前行是空行，代表处于 TODO Tasks 表格的末尾行
+  """
+  # 上面第 3 行，inTable == 1 并且当前行是空行，代表处于 目标表格 的末尾行
+  _awk_modify "$script" "$BOARD_FILE"
 
-  awk -i inplace -v INPLACE_SUFFIX=.bak "$script" "$board_file"
+  green "[make task dir] $task_id in $table_name"
+  mkdir -p "$table_name/$task_id"
+}
 
-  green "[make task dir] $task_id in TODO"
-  mkdir -p "TODO/$task_id"
+##### public #####
+
+# 添加一条冲动型事件
+#
+# $1: 事件描述，即 desc 列，默认为 '描述 xxx'
+add_impulsion(){
+  local desc=${1:-'描述 xxx'}
+  _add_record_to_table 'IMPULSION' "| $desc | 上下文  | 对接人  |" "$desc"
+}
+
+# 确定要做一个冲动型事件，即:把它移动到 TODO 事件表格，同时移动其 资料文件夹 到 TODO
+#
+# $1: desc 冲动型事件描述，即它的 id
+confirm_impulsion(){
+  local desc=${1:?missing param \$1: desc}
+
+  # 用 awk 定位到这一行记录然后提取其中的 ask who
+  local extract_record_awk="""
+  /^## IMPULSION/ {inSection = 1}
+  inSection == 1 && /^\| *$desc/ {print}
+  """
+  local record=$(awk "$extract_record_awk" "$BOARD_FILE")
+  green "[found record in IMPULSION]\n  ->$record"
+
+  local ask_who=$(echo $record | awk 'BEGIN{ -FS "|" } {print $6}')
+  green "[extracted ask_who from record]\n  ->$ask_who"
+
+  # 用 awk 删除 IMPULSION 表中对应记录(用 next 略去那一条即可)
+  local remove_record_awk="""
+  /^## IMPULSION/ {inSection = 1}
+  inSection == 1 && /^\| *$desc/ {next}
+  {print}
+  """
+  # awk "$remove_record_awk" "$BOARD_FILE"
+  _awk_modify "$remove_record_awk" "$BOARD_FILE"
+  green "[removed record in IMPULSION]\n -> $record"
+
+  # 添加 record 到 TODO 表格
+  local task_id=$(add_task "$desc" "$ask_who" | tail -n1)
+  green "[moved IMPULSION/$desc to TODO/$task_id]"
+  # 同时移动资源文件夹
+  mv "./IMPULSION/$desc" "./IMPULSION/$task_id" && mv "./IMPULSION/$task_id" "./TODO/"
+}
+
+# 在 board-$year.md 中的 Task 表格中添加一条记录，其中 year 为执行命令时的年份，due 列为当前日期 + 1 week
+#
+# $1: task name，即 task 列，默认为 'xxx'
+# $2: ask_who，即 ask who 列，默认为 'xxx'
+# $3: desc，即 desc 列，默认为 'xxx'
+#
+# @return 最后一行 创建的 task_id
+add_task() {
+  local name=${1:-'xxx'}
+  local ask_who=${2:-' xxx'}
+  local desc=${3:-'xxx'}
+
+  # 生成 task id，unit timestamp
+  local task_id=$(date +'%s')
+  local task_row="| $task_id | $name | $ask_who    |  $desc    | $(date -v+1w +'%m.%d') |"
+
+  _add_record_to_table 'TODO' "$task_row" "$task_id"
 
   sort_out
+
+  echo "$task_id" # 返回值，永远在最后一行
 }
 
 # 按时间整理文件夹
