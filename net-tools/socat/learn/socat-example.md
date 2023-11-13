@@ -1,8 +1,6 @@
 # Examples for using socat (and filan)
 
 ```console
-//"$" means normal user, "#" requires privileges, "//" starts a comment
-
 ///////////////////////////////////////////////////////////////////////////////
 // similar to netcat
 
