@@ -75,7 +75,7 @@ DESCRIPTION
 
 - familiarity with programming concepts like variables, printing, control structures, arrays, etc
 - familiarity with regular expressions
-  - if not, check out **ERE** portion of [GNU sed regular expressions](./gnu_sed.md#regular-expressions) which is close enough to features available in `gawk`
+  - if not, check out **ERE** portion of [GNU sed regular expressions](../sed/notes/gnu-sed.md#regular-expressions) which is close enough to features available in `gawk`
 - this tutorial is primarily focussed on short programs that are easily usable from command line, similar to using `grep`, `sed`, etc
 - see [Gawk: Effective AWK Programming](https://www.gnu.org/software/gawk/manual/) manual for complete reference, has information on other `awk` versions as well as notes on POSIX standard
 

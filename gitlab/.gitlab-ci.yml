@@ -5,7 +5,7 @@
 ##### shared config
 
 .common:
-  tags:
+  tags: # runner 的 tag
     - docker
 
 ##### global config

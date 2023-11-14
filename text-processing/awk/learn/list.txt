@@ -1,0 +1,3 @@
+CSE     Surya   75
+EEE     Jai     69
+ECE     Kal     83
