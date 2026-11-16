@@ -140,4 +140,4 @@ patch_env(){
 }
 
 # ./demo.sh _method_ _dirname_
-$@
+$1 "${@:2}"

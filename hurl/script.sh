@@ -26,4 +26,4 @@ test() {
   _hurl --test "$playbook_file"
 }
 
-$@
+$1 "${@:2}"
